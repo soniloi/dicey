@@ -4,10 +4,11 @@ import sys
 import tensorflow
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+CHANNELS = 1
 CLASSES = ["d4", "d6", "d8", "d10", "d12", "d20"]
 BATCH_SIZE = 100
 IMAGE_SIZE = 150
-EPOCHS = 1
+EPOCHS = 10
 
 if __name__ == "__main__":
     dataset_base_dir = sys.argv[1]
@@ -32,6 +33,7 @@ if __name__ == "__main__":
                                                      directory=train_dir,
                                                      shuffle=True,
                                                      target_size=(IMAGE_SIZE, IMAGE_SIZE),
+                                                     color_mode="grayscale",
                                                      class_mode="sparse")
 
     validation_generator = ImageDataGenerator(rescale=1./255)
@@ -39,12 +41,13 @@ if __name__ == "__main__":
                                                                directory=valid_dir,
                                                                shuffle=False,
                                                                target_size=(IMAGE_SIZE, IMAGE_SIZE),
+                                                               color_mode="grayscale",
                                                                class_mode="sparse")
 
     kernel_size = (3, 3)
     num_classes = len(CLASSES)
     model = tensorflow.keras.models.Sequential([
-        tensorflow.keras.layers.Conv2D(8, kernel_size, activation="relu", input_shape=(IMAGE_SIZE, IMAGE_SIZE, 3)),
+        tensorflow.keras.layers.Conv2D(8, kernel_size, activation="relu", input_shape=(IMAGE_SIZE, IMAGE_SIZE, CHANNELS)),
         tensorflow.keras.layers.MaxPooling2D(2, 2),
         tensorflow.keras.layers.Conv2D(16, kernel_size, activation="relu"),
         tensorflow.keras.layers.MaxPooling2D(2, 2),
