@@ -14,7 +14,7 @@ if __name__ == "__main__":
     dataset_base_dir = sys.argv[1]
     train_split = sys.argv[2]
     valid_split = sys.argv[3]
-    print(dataset_base_dir)
+    output_filename = sys.argv[4]
 
     train_dir = os.path.join(dataset_base_dir, train_split)
     valid_dir = os.path.join(dataset_base_dir, valid_split)
@@ -31,6 +31,7 @@ if __name__ == "__main__":
     train_generator = ImageDataGenerator(rescale=1./255)
     train_data = train_generator.flow_from_directory(batch_size=BATCH_SIZE,
                                                      directory=train_dir,
+                                                     classes=CLASSES,
                                                      shuffle=True,
                                                      target_size=(IMAGE_SIZE, IMAGE_SIZE),
                                                      color_mode="grayscale",
@@ -39,6 +40,7 @@ if __name__ == "__main__":
     validation_generator = ImageDataGenerator(rescale=1./255)
     validation_data = validation_generator.flow_from_directory(batch_size=BATCH_SIZE,
                                                                directory=valid_dir,
+                                                               classes=CLASSES,
                                                                shuffle=False,
                                                                target_size=(IMAGE_SIZE, IMAGE_SIZE),
                                                                color_mode="grayscale",
@@ -78,3 +80,5 @@ if __name__ == "__main__":
     print("accuracy: {0} loss: {1} val_accuracy: {2} val_loss: {3}".format(
         accuracy, loss, val_accuracy, val_loss
     ))
+
+    model.save(output_filename)
