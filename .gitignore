@@ -105,3 +105,6 @@ venv.bak/
 
 # shell files
 *.sh
+
+# Data
+*.h5
