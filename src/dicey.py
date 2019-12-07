@@ -8,7 +8,7 @@ CHANNELS = 1
 CLASSES = ["d4", "d6", "d8", "d10", "d12", "d20"]
 BATCH_SIZE = 100
 IMAGE_SIZE = 150
-EPOCHS = 10
+EPOCHS = 20
 
 if __name__ == "__main__":
     dataset_base_dir = sys.argv[1]
@@ -28,7 +28,14 @@ if __name__ == "__main__":
         num_valid_images = len(os.listdir(class_valid_dir))
         print("number of {0} validation images: {1}".format(cls, num_valid_images))
 
-    train_generator = ImageDataGenerator(rescale=1./255)
+    train_generator = ImageDataGenerator(rescale=1./255,
+                                         rotation_range=45,
+                                         width_shift_range=0.2,
+                                         height_shift_range=0.2,
+                                         zoom_range=0.4,
+                                         brightness_range=[0.2, 0.8],
+    )
+
     train_data = train_generator.flow_from_directory(batch_size=BATCH_SIZE,
                                                      directory=train_dir,
                                                      classes=CLASSES,
@@ -49,12 +56,14 @@ if __name__ == "__main__":
     kernel_size = (3, 3)
     num_classes = len(CLASSES)
     model = tensorflow.keras.models.Sequential([
-        tensorflow.keras.layers.Conv2D(8, kernel_size, activation="relu", input_shape=(IMAGE_SIZE, IMAGE_SIZE, CHANNELS)),
-        tensorflow.keras.layers.MaxPooling2D(2, 2),
-        tensorflow.keras.layers.Conv2D(16, kernel_size, activation="relu"),
+        tensorflow.keras.layers.Conv2D(16, kernel_size, activation="relu", input_shape=(IMAGE_SIZE, IMAGE_SIZE, CHANNELS)),
         tensorflow.keras.layers.MaxPooling2D(2, 2),
         tensorflow.keras.layers.Conv2D(32, kernel_size, activation="relu"),
         tensorflow.keras.layers.MaxPooling2D(2, 2),
+        tensorflow.keras.layers.Conv2D(64, kernel_size, activation="relu"),
+        tensorflow.keras.layers.MaxPooling2D(2, 2),
+
+        tensorflow.keras.layers.Dropout(0.5),
         tensorflow.keras.layers.Flatten(),
         tensorflow.keras.layers.Dense(512, activation="relu"),
         tensorflow.keras.layers.Dense(num_classes, activation="softmax")
